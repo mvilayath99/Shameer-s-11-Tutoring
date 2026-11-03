@@ -14,14 +14,15 @@ const WHY = [
 ]
 
 export default function Home() {
-  const { settings } = useSettings()
+  const { settings, content } = useSettings()
+  const testimonials: { quote: string; name: string }[] = content.testimonials ?? []
   return (
     <>
       <section className="border-b border-line bg-secondary">
         <div className="container-page py-20 sm:py-28">
           <p className="text-sm font-medium uppercase tracking-wide text-primary">11+ tutoring · Maths · English · Verbal and non-verbal reasoning</p>
-          <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">{settings.business_name}</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">{settings.tagline}</p>
+          <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">{content.hero?.heading || settings.business_name}</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">{content.hero?.intro || settings.tagline}</p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Link to="/contact" className="btn-primary px-6 py-3 text-base">Book a free assessment</Link>
             <Link to="/about" className="btn-outline px-6 py-3 text-base">About us</Link>
@@ -36,7 +37,21 @@ export default function Home() {
         {WHY.map((o) => <Feature key={o.title} {...o} />)}
       </Section>
 
-      <section className="container-page py-20 text-center">
+      {testimonials.length > 0 && (
+        <section className="container-page py-20">
+          <h2 className="text-2xl font-semibold">What parents say</h2>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {testimonials.map((t, i) => (
+              <figure key={i} className="card">
+                <blockquote className="leading-relaxed text-ink">“{t.quote}”</blockquote>
+                <figcaption className="mt-4 text-sm text-muted">{t.name}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="container-page border-t border-line py-20 text-center">
         <h2 className="text-2xl font-semibold">Not sure where to start?</h2>
         <p className="mx-auto mt-3 max-w-xl text-muted">A free assessment shows where your child is now and what they need before the exam.</p>
         <Link to="/contact" className="btn-primary mt-8 px-6 py-3 text-base">Book a free assessment</Link>

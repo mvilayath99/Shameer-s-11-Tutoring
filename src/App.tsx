@@ -6,9 +6,13 @@ import { isSuperAdmin } from './lib/roles'
 import { PublicLayout } from './components/PublicLayout'
 import { PortalLayout } from './components/PortalLayout'
 import SettingsPage from './pages/admin/settings/SettingsPage'
+import Enquiries from './pages/admin/Enquiries'
+import { ModuleGate } from './components/ModuleGate'
 import { Loading, RequirePortal } from './components/RequirePortal'
 import Home from './pages/public/Home'
-import { About, Contact, NotFound, Privacy, Terms } from './pages/public/Simple'
+import { About, NotFound, Privacy, Terms } from './pages/public/Simple'
+import Contact from './pages/public/Contact'
+import { Courses, ExamBoards, Faq } from './pages/public/Courses'
 import Login from './pages/auth/Login'
 import Signup from './pages/auth/Signup'
 import StudentLogin from './pages/auth/StudentLogin'
@@ -31,6 +35,9 @@ export default function App() {
             <Route element={<PublicLayout />}>
               <Route index element={<Home />} />
               <Route path="about" element={<About />} />
+              <Route path="courses" element={<Courses />} />
+              <Route path="exam-boards" element={<ExamBoards />} />
+              <Route path="faq" element={<Faq />} />
               <Route path="contact" element={<Contact />} />
               <Route path="privacy" element={<Privacy />} />
               <Route path="terms" element={<Terms />} />
@@ -45,6 +52,7 @@ export default function App() {
             <Route path="admin" element={<RequirePortal portal="admin"><PortalLayout portal="admin" /></RequirePortal>}>
               <Route index element={<AdminDashboard />} />
               <Route path="settings/*" element={<RequireSuperAdmin><SettingsPage /></RequireSuperAdmin>} />
+              <Route path="enquiries" element={<ModuleGate moduleKey="enquiries"><Enquiries /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="parent" element={<RequirePortal portal="parent"><PortalLayout portal="parent" /></RequirePortal>}>

@@ -4,6 +4,7 @@ import { STATUS_LABEL, STATUS_TONE, fmtDay, fmtTime, type Lesson } from '../../l
 import type { Student } from '../../lib/families'
 import { Badge, Table, Td } from '../../components/ui'
 import { STUDENT_TABS } from './StudentProfile'
+import { SUB_LABEL, SUB_TONE, percent, type SubStatus } from '../../lib/homework'
 
 function StudentLessons({ s }: { s: Student }) {
   const [rows, setRows] = useState<Lesson[]>([])
@@ -32,3 +33,25 @@ function StudentLessons({ s }: { s: Student }) {
 }
 
 STUDENT_TABS.lessons = (s) => <StudentLessons s={s} />
+
+function StudentHomework({ s }: { s: Student }) {
+  const [rows, setRows] = useState<{ id: string; status: SubStatus; score: number | null; total: number | null; homework: { title: string; due_at: string | null } | null }[]>([])
+  useEffect(() => {
+    supabase.from('homework_submissions').select('id, status, score, total, homework(title, due_at)').eq('student_id', s.id)
+      .then(({ data }) => setRows((data ?? []) as unknown as typeof rows))
+  }, [s.id])
+  return (
+    <Table head={['Homework', 'Due', 'Status', 'Score']} empty="No homework yet.">
+      {rows.map((r) => (
+        <tr key={r.id}>
+          <Td className="font-medium">{r.homework?.title}</Td>
+          <Td className="text-muted">{r.homework?.due_at ? fmtDay(r.homework.due_at) : '—'}</Td>
+          <Td><Badge tone={SUB_TONE[r.status]}>{SUB_LABEL[r.status]}</Badge></Td>
+          <Td>{r.status === 'marked' ? `${r.score}/${r.total}${percent(r) != null ? ` (${percent(r)}%)` : ''}` : ''}</Td>
+        </tr>
+      ))}
+    </Table>
+  )
+}
+
+STUDENT_TABS.homework = (s) => <StudentHomework s={s} />

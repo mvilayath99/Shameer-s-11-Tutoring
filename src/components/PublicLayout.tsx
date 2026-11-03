@@ -9,6 +9,9 @@ import { homePortal } from '../lib/roles'
 const NAV = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About' },
+  { to: '/courses', label: 'Courses' },
+  { to: '/exam-boards', label: 'Exam boards' },
+  { to: '/faq', label: 'FAQ' },
   { to: '/contact', label: 'Contact' },
 ]
 
@@ -23,7 +26,7 @@ export function PublicLayout() {
       <header className="border-b border-line bg-white">
         <div className="container-page flex h-16 items-center justify-between">
           <Logo />
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-6 lg:flex">
             {NAV.map((n) => (
               <NavLink key={n.to} to={n.to} end className={({ isActive }) => `text-sm ${isActive ? 'text-primary font-medium' : 'text-muted hover:text-ink'}`}>
                 {n.label}
@@ -35,12 +38,12 @@ export function PublicLayout() {
               <Link to="/login" className="btn-outline">Sign in</Link>
             )}
           </nav>
-          <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
+          <button className="lg:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
             {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
         {open && (
-          <nav className="container-page flex flex-col gap-4 border-t border-line py-4 md:hidden">
+          <nav className="container-page flex flex-col gap-4 border-t border-line py-4 lg:hidden">
             {NAV.map((n) => <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="text-sm">{n.label}</Link>)}
             <Link to={session && portal ? `/${portal}` : '/login'} onClick={() => setOpen(false)} className="btn-primary">
               {session && portal ? 'My account' : 'Sign in'}

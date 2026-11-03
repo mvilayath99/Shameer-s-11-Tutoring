@@ -6,7 +6,12 @@ import { isSuperAdmin } from './lib/roles'
 import { PublicLayout } from './components/PublicLayout'
 import { PortalLayout } from './components/PortalLayout'
 import SettingsPage from './pages/admin/settings/SettingsPage'
-import Enquiries from './pages/admin/Enquiries'
+import Enquiries, { type Enquiry } from './pages/admin/Enquiries'
+import Students from './pages/admin/Students'
+import StudentProfile from './pages/admin/StudentProfile'
+import FamilyDetail from './pages/admin/FamilyDetail'
+import Children from './pages/parent/Children'
+import { supabase } from './lib/supabase'
 import { ModuleGate } from './components/ModuleGate'
 import { Loading, RequirePortal } from './components/RequirePortal'
 import Home from './pages/public/Home'
@@ -24,6 +29,11 @@ function RequireSuperAdmin({ children }: { children: ReactNode }) {
   const { roles, loading } = useAuth()
   if (loading) return <Loading />
   return isSuperAdmin(roles) ? <>{children}</> : <Navigate to="/admin" replace />
+}
+
+async function convertEnquiry(e: Enquiry) {
+  const { error } = await supabase.rpc('convert_enquiry', { _enquiry_id: e.id })
+  return error?.message ?? null
 }
 
 export default function App() {
@@ -52,11 +62,15 @@ export default function App() {
             <Route path="admin" element={<RequirePortal portal="admin"><PortalLayout portal="admin" /></RequirePortal>}>
               <Route index element={<AdminDashboard />} />
               <Route path="settings/*" element={<RequireSuperAdmin><SettingsPage /></RequireSuperAdmin>} />
-              <Route path="enquiries" element={<ModuleGate moduleKey="enquiries"><Enquiries /></ModuleGate>} />
+              <Route path="enquiries" element={<ModuleGate moduleKey="enquiries"><Enquiries onConvert={convertEnquiry} /></ModuleGate>} />
+              <Route path="students" element={<ModuleGate moduleKey="students"><Students /></ModuleGate>} />
+              <Route path="students/:id" element={<ModuleGate moduleKey="students"><StudentProfile /></ModuleGate>} />
+              <Route path="families/:id" element={<ModuleGate moduleKey="students"><FamilyDetail /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="parent" element={<RequirePortal portal="parent"><PortalLayout portal="parent" /></RequirePortal>}>
               <Route index element={<ParentDashboard />} />
+              <Route path="students" element={<ModuleGate moduleKey="students"><Children /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="student" element={<RequirePortal portal="student"><PortalLayout portal="student" /></RequirePortal>}>

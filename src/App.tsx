@@ -1,3 +1,4 @@
+import './pages/admin/studentTabs'
 import type { ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './lib/AuthProvider'
@@ -11,6 +12,10 @@ import Students from './pages/admin/Students'
 import StudentProfile from './pages/admin/StudentProfile'
 import FamilyDetail from './pages/admin/FamilyDetail'
 import Children from './pages/parent/Children'
+import Calendar from './pages/admin/Calendar'
+import Groups from './pages/admin/Groups'
+import Lessons from './pages/admin/Lessons'
+import FamilyLessons from './pages/family/FamilyLessons'
 import { supabase } from './lib/supabase'
 import { ModuleGate } from './components/ModuleGate'
 import { Loading, RequirePortal } from './components/RequirePortal'
@@ -66,15 +71,22 @@ export default function App() {
               <Route path="students" element={<ModuleGate moduleKey="students"><Students /></ModuleGate>} />
               <Route path="students/:id" element={<ModuleGate moduleKey="students"><StudentProfile /></ModuleGate>} />
               <Route path="families/:id" element={<ModuleGate moduleKey="students"><FamilyDetail /></ModuleGate>} />
+              <Route path="calendar" element={<ModuleGate moduleKey="calendar"><Calendar /></ModuleGate>} />
+              <Route path="groups" element={<ModuleGate moduleKey="groups"><Groups /></ModuleGate>} />
+              <Route path="lessons" element={<ModuleGate moduleKey="lessons"><Lessons /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="parent" element={<RequirePortal portal="parent"><PortalLayout portal="parent" /></RequirePortal>}>
               <Route index element={<ParentDashboard />} />
               <Route path="students" element={<ModuleGate moduleKey="students"><Children /></ModuleGate>} />
+              <Route path="calendar" element={<ModuleGate moduleKey="calendar"><FamilyLessons mode="upcoming" portal="parent" /></ModuleGate>} />
+              <Route path="lessons" element={<ModuleGate moduleKey="lessons"><FamilyLessons mode="past" portal="parent" /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="student" element={<RequirePortal portal="student"><PortalLayout portal="student" /></RequirePortal>}>
               <Route index element={<StudentDashboard />} />
+              <Route path="calendar" element={<ModuleGate moduleKey="calendar"><FamilyLessons mode="upcoming" portal="student" /></ModuleGate>} />
+              <Route path="lessons" element={<ModuleGate moduleKey="lessons"><FamilyLessons mode="past" portal="student" /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
 

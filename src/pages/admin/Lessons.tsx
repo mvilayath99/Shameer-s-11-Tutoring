@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { notify } from '../../lib/notify'
 import { STATUS_LABEL, STATUS_TONE, fmtDay, fmtTime, lessonTitle, useLookups, useStaff, type Lesson } from '../../lib/lessons'
 import { formatDate } from '../../lib/format'
 import { PageHeader } from '../../components/PortalLayout'
@@ -37,6 +38,7 @@ export default function Lessons() {
     await supabase.from('lesson_requests').update({ status, staff_reply: reply || null, decided_at: new Date().toISOString() }).eq('id', r.id)
     if (status === 'approved' && r.kind === 'cancel' && r.lesson_id) {
       await supabase.from('lessons').update({ status: 'cancelled_by_parent' }).eq('id', r.lesson_id)
+      notify('lesson_cancelled', r.lesson_id)
       setMsg('Request approved and the lesson marked as cancelled by parent.')
     } else if (status === 'approved' && r.lesson_id) {
       const { data } = await supabase.from('lessons').select('*').eq('id', r.lesson_id).maybeSingle()

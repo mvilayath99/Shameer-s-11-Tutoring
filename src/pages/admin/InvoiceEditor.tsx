@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Printer, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { notify } from '../../lib/notify'
 import { formatDate, formatGBP } from '../../lib/format'
 import {
   INVOICE_STATUS_LABEL, INVOICE_STATUS_TONE, METHOD_LABEL, balance, isOverdue, periodLabel, today,
@@ -169,10 +170,10 @@ export function InvoiceEditor({ invoiceId, familyName, onClose, onChanged }: {
         {draft && <button className="btn-outline text-red-700" onClick={async () => { if (confirm('Delete this draft invoice? Its lessons can be invoiced again.')) { await run(() => supabase.from('invoices').delete().eq('id', inv.id)); onClose() } }}>Delete draft</button>}
         {draft && <button className="btn-outline" onClick={() => run(() => supabase.rpc('apply_discounts', { _invoice_id: inv.id, _on: inv.period_end ?? today() }))}>Recalculate discounts</button>}
         {open && <button className="btn-outline" onClick={() => confirm('Cancel this invoice? It stays on record as cancelled and its lessons can be invoiced again.') && run(() => supabase.from('invoices').update({ status: 'void' }).eq('id', inv.id))}>Cancel invoice</button>}
-        {draft && <button className="btn-primary" disabled={!lines.length} onClick={() => run(() => supabase.rpc('send_invoice', { _invoice_id: inv.id }))}>Send to family</button>}
+        {draft && <button className="btn-primary" disabled={!lines.length} onClick={async () => { if (await run(() => supabase.rpc('send_invoice', { _invoice_id: inv.id }))) notify('invoice_sent', inv.id) }}>Send to family</button>}
         {!draft && <button className="btn-outline" onClick={onClose}>Done</button>}
       </div>
-      {draft && <p className="mt-2 text-right text-xs text-muted">Sending makes it visible in the parent portal. Email delivery is added in the email step.</p>}
+      {draft && <p className="mt-2 text-right text-xs text-muted">Sending emails the family a link and shows it in their parent portal.</p>}
     </Modal>
   )
 }

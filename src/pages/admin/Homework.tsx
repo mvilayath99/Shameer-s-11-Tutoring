@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { ArrowLeft, Paperclip, Plus, Upload } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { notify } from '../../lib/notify'
 import { SUB_LABEL, SUB_TONE, openFile, percent, safeName, type Homework as HW, type Resource, type SubFile, type Submission } from '../../lib/homework'
 import { SUBJECTS, useLookups } from '../../lib/lessons'
 import { formatDate } from '../../lib/format'
@@ -81,6 +82,7 @@ function SetHomework({ students, groups, studentName, onClose, onSaved }: {
     }).select('id').single()
     if (error) { setError(error.message); return }
     if (picked.length) await supabase.from('homework_resources').insert(picked.map((r) => ({ homework_id: data.id, resource_id: r })))
+    notify('homework_set', data.id)
     onSaved(); onClose()
   }
 
@@ -155,6 +157,7 @@ function MarkHomework({ hw, studentName, onBack }: { hw: HW; studentName: Record
     const { error } = await supabase.from('homework_submissions').update({
       score: active.score, total: active.total, comment: active.comment, status: 'marked', marked_at: new Date().toISOString(), marked_by: u.user?.id,
     }).eq('id', active.id)
+    if (!error) notify('homework_marked', active.id)
     setMsg(error ? error.message : `Marked ${studentName[active.student_id]}.`); setActive(null); load()
   }
   const uploadMarked = async (file: File) => {

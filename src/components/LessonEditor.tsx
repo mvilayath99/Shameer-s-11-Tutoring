@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
+import { notify } from '../lib/notify'
 import { DELIVERY_LABEL, toDateInput, toTimeInput, type Delivery, type Group, type Lesson, type LessonKind, type StaffMember } from '../lib/lessons'
 import { Field, Notice } from './ui'
 import { Modal } from './Modal'
@@ -61,20 +62,27 @@ export function LessonEditor({ lesson, defaults, students, groups, staff, onClos
           const { error } = await supabase.from('lessons').update({ ...base, starts_at: s.toISOString(), ends_at: new Date(s.getTime() + minutes * 60000).toISOString() }).eq('id', l.id)
           if (error) { err = error.message; break }
         }
+        if (!err && shift !== 0) notify('lesson_changed', lesson.id)
       } else {
         const { error } = await supabase.from('lessons').update({ ...base, starts_at: startsAt.toISOString(), ends_at: endsAt.toISOString() }).eq('id', lesson.id)
         err = error?.message ?? null
+        if (!err && startsAt.getTime() !== new Date(lesson.starts_at).getTime()) notify('lesson_changed', lesson.id)
       }
     } else if (repeat !== 'none') {
-      const { error } = await supabase.rpc('create_lesson_series', {
+      const { data, error } = await supabase.rpc('create_lesson_series', {
         _kind: kind, _student_id: base.student_id, _group_id: base.group_id, _tutor_id: base.tutor_id, _delivery: delivery,
         _location: base.location, _first_date: date, _until: until, _start_time: time, _duration_minutes: minutes,
         _interval_weeks: Number(repeat), _meeting_url: base.meeting_url,
       })
       err = error?.message ?? null
+      if (!err) {
+        const { data: first } = await supabase.from('lessons').select('id').eq('series_id', data).order('starts_at').limit(1).maybeSingle()
+        if (first) notify('lesson_booked', first.id)
+      }
     } else {
-      const { error } = await supabase.from('lessons').insert({ ...base, starts_at: startsAt.toISOString(), ends_at: endsAt.toISOString() })
+      const { data, error } = await supabase.from('lessons').insert({ ...base, starts_at: startsAt.toISOString(), ends_at: endsAt.toISOString() }).select('id').single()
       err = error?.message ?? null
+      if (data) notify('lesson_booked', data.id)
     }
     setBusy(false)
     if (err) setError(err); else { onSaved(); onClose() }

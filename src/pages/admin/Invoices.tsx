@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Plus, Send, Trash2, Wand2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { notify } from '../../lib/notify'
 import { formatDate, formatGBP } from '../../lib/format'
 import { SCHOOL_YEARS } from '../../lib/families'
 import { DELIVERY_LABEL, useLookups, type Delivery, type LessonKind } from '../../lib/lessons'
@@ -94,6 +95,7 @@ function InvoiceList() {
     for (const id of selected) {
       const { error } = await supabase.rpc('send_invoice', { _invoice_id: id })
       if (error) { setMsg({ kind: 'error', text: error.message }); break }
+      notify('invoice_sent', id)
     }
     setBusy(false); setSelected(new Set()); load()
   }

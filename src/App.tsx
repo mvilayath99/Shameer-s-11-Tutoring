@@ -23,6 +23,8 @@ import StudentResources from './pages/family/StudentResources'
 import Invoices from './pages/admin/Invoices'
 import ParentInvoices from './pages/parent/ParentInvoices'
 import InvoiceView from './pages/InvoiceView'
+import Messages from './pages/admin/Messages'
+import EmailPreferences from './pages/parent/EmailPreferences'
 import { supabase } from './lib/supabase'
 import { ModuleGate } from './components/ModuleGate'
 import { Loading, RequirePortal } from './components/RequirePortal'
@@ -85,6 +87,7 @@ export default function App() {
               <Route path="resources" element={<ModuleGate moduleKey="resources"><Resources /></ModuleGate>} />
               <Route path="homework" element={<ModuleGate moduleKey="homework"><Homework /></ModuleGate>} />
               <Route path="invoices" element={<ModuleGate moduleKey="invoices"><Invoices /></ModuleGate>} />
+              <Route path="messages" element={<ModuleGate moduleKey="messages"><Messages /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="parent" element={<RequirePortal portal="parent"><PortalLayout portal="parent" /></RequirePortal>}>
@@ -94,6 +97,7 @@ export default function App() {
               <Route path="lessons" element={<ModuleGate moduleKey="lessons"><FamilyLessons mode="past" portal="parent" /></ModuleGate>} />
               <Route path="homework" element={<ModuleGate moduleKey="homework"><FamilyHomework portal="parent" /></ModuleGate>} />
               <Route path="invoices" element={<ModuleGate moduleKey="invoices"><ParentInvoices /></ModuleGate>} />
+              <Route path="messages" element={<ModuleGate moduleKey="messages"><EmailPreferences /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="student" element={<RequirePortal portal="student"><PortalLayout portal="student" /></RequirePortal>}>

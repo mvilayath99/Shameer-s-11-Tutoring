@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { notify } from '../lib/notify'
 import { DELIVERY_LABEL, STATUS_LABEL, SUBJECTS, fmtLong, fmtTime, type Lesson, type LessonStatus } from '../lib/lessons'
 import { Field, Notice } from './ui'
 import { Modal } from './Modal'
@@ -45,6 +46,7 @@ export function LessonRecord({ lesson, title, studentName, onClose, onSaved, onE
     if (billable !== lesson.billable) patch.billable = billable
     const { error } = await supabase.from('lessons').update(patch).eq('id', lesson.id)
     if (error) { setError(error.message); return }
+    if (status !== lesson.status && (status === 'cancelled_by_tutor' || status === 'cancelled_by_parent')) notify('lesson_cancelled', lesson.id)
     if (status === 'completed' || status === 'no_show') {
       await supabase.from('lesson_attendance').upsert(ids.map((sid) => ({ lesson_id: lesson.id, student_id: sid, attendance: att[sid] ?? 'present' })))
     }

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 import { Page } from './Simple'
 import { supabase, isConfigured } from '../../lib/supabase'
+import { notify } from '../../lib/notify'
 import { useSettings } from '../../lib/SettingsProvider'
 import { Field, Notice } from '../../components/ui'
 
@@ -22,7 +23,9 @@ export default function Contact() {
     e.preventDefault()
     if (website) { setState('sent'); return }
     setState('sending')
-    const { error } = await supabase.from('enquiries').insert({ ...f, phone: f.phone || null, consent })
+    const id = crypto.randomUUID()
+    const { error } = await supabase.from('enquiries').insert({ id, ...f, phone: f.phone || null, consent })
+    if (!error) notify('enquiry_received', id)
     setState(error ? 'error' : 'sent')
   }
 

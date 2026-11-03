@@ -31,6 +31,30 @@ Web app for a UK 11+ tutoring business: a public marketing site plus signed-in a
 
 Roles are stored in `user_roles` (never on the profile) and enforced with row-level security.
 
+## Email
+
+Emails are sent by the `notify` edge function using the wording in Messages → Email templates.
+Until it is connected, every email is recorded in Messages → Sent emails as "Not sent".
+
+1. Create a free account at [resend.com](https://resend.com), add and verify your domain, and create an API key.
+2. In Supabase → Edge Functions → Secrets, add:
+   - `RESEND_API_KEY`: the key from Resend
+   - `EMAIL_FROM`: for example `Shameer's 11+ Tutoring <hello@yourdomain.co.uk>`
+   - `SITE_URL`: the website address, for example `https://shameers-11plus-tutoring.netlify.app`
+   - `CRON_SECRET`: any long random string
+3. Optional daily reminders (lessons tomorrow, and overdue invoices once each). In the Supabase SQL editor,
+   enable the `pg_cron` and `pg_net` extensions, then run, with your own secret and anon key:
+
+   ```sql
+   select cron.schedule('daily-reminders', '0 8 * * *', $$
+     select net.http_post(
+       url := 'https://oiruxqvcxahiqhrpbtpw.supabase.co/functions/v1/notify',
+       headers := jsonb_build_object('Content-Type', 'application/json',
+         'Authorization', 'Bearer <anon key>', 'x-cron-secret', '<CRON_SECRET>'),
+       body := '{"event":"daily"}'::jsonb)
+   $$);
+   ```
+
 ## Local development
 
 ```bash

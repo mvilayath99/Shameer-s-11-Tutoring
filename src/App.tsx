@@ -25,6 +25,8 @@ import ParentInvoices from './pages/parent/ParentInvoices'
 import InvoiceView from './pages/InvoiceView'
 import Messages from './pages/admin/Messages'
 import EmailPreferences from './pages/parent/EmailPreferences'
+import Reports from './pages/Reports'
+import { CookieNotice } from './components/CookieNotice'
 import { supabase } from './lib/supabase'
 import { ModuleGate } from './components/ModuleGate'
 import { Loading, RequirePortal } from './components/RequirePortal'
@@ -88,6 +90,7 @@ export default function App() {
               <Route path="homework" element={<ModuleGate moduleKey="homework"><Homework /></ModuleGate>} />
               <Route path="invoices" element={<ModuleGate moduleKey="invoices"><Invoices /></ModuleGate>} />
               <Route path="messages" element={<ModuleGate moduleKey="messages"><Messages /></ModuleGate>} />
+              <Route path="reports" element={<ModuleGate moduleKey="reports"><Reports portal="admin" /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="parent" element={<RequirePortal portal="parent"><PortalLayout portal="parent" /></RequirePortal>}>
@@ -98,6 +101,7 @@ export default function App() {
               <Route path="homework" element={<ModuleGate moduleKey="homework"><FamilyHomework portal="parent" /></ModuleGate>} />
               <Route path="invoices" element={<ModuleGate moduleKey="invoices"><ParentInvoices /></ModuleGate>} />
               <Route path="messages" element={<ModuleGate moduleKey="messages"><EmailPreferences /></ModuleGate>} />
+              <Route path="reports" element={<ModuleGate moduleKey="reports"><Reports portal="parent" /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="student" element={<RequirePortal portal="student"><PortalLayout portal="student" /></RequirePortal>}>
@@ -106,11 +110,13 @@ export default function App() {
               <Route path="lessons" element={<ModuleGate moduleKey="lessons"><FamilyLessons mode="past" portal="student" /></ModuleGate>} />
               <Route path="homework" element={<ModuleGate moduleKey="homework"><FamilyHomework portal="student" /></ModuleGate>} />
               <Route path="resources" element={<ModuleGate moduleKey="resources"><StudentResources /></ModuleGate>} />
+              <Route path="reports" element={<ModuleGate moduleKey="reports"><Reports portal="student" /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
 
             <Route element={<PublicLayout />}><Route path="*" element={<NotFound />} /></Route>
           </Routes>
+          <CookieNotice />
         </AuthProvider>
       </SettingsProvider>
     </BrowserRouter>

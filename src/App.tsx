@@ -4,7 +4,8 @@ import { AuthProvider, useAuth } from './lib/AuthProvider'
 import { SettingsProvider } from './lib/SettingsProvider'
 import { isSuperAdmin } from './lib/roles'
 import { PublicLayout } from './components/PublicLayout'
-import { PortalLayout, PageHeader } from './components/PortalLayout'
+import { PortalLayout } from './components/PortalLayout'
+import SettingsPage from './pages/admin/settings/SettingsPage'
 import { Loading, RequirePortal } from './components/RequirePortal'
 import Home from './pages/public/Home'
 import { About, Contact, NotFound, Privacy, Terms } from './pages/public/Simple'
@@ -43,7 +44,7 @@ export default function App() {
 
             <Route path="admin" element={<RequirePortal portal="admin"><PortalLayout portal="admin" /></RequirePortal>}>
               <Route index element={<AdminDashboard />} />
-              <Route path="settings/*" element={<RequireSuperAdmin><PageHeader title="Site settings" subtitle="Branding, modules, site content and staff. Coming in step 2." /></RequireSuperAdmin>} />
+              <Route path="settings/*" element={<RequireSuperAdmin><SettingsPage /></RequireSuperAdmin>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="parent" element={<RequirePortal portal="parent"><PortalLayout portal="parent" /></RequirePortal>}>

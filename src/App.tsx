@@ -20,6 +20,9 @@ import Resources from './pages/admin/Resources'
 import Homework from './pages/admin/Homework'
 import FamilyHomework from './pages/family/FamilyHomework'
 import StudentResources from './pages/family/StudentResources'
+import Invoices from './pages/admin/Invoices'
+import ParentInvoices from './pages/parent/ParentInvoices'
+import InvoiceView from './pages/InvoiceView'
 import { supabase } from './lib/supabase'
 import { ModuleGate } from './components/ModuleGate'
 import { Loading, RequirePortal } from './components/RequirePortal'
@@ -67,6 +70,7 @@ export default function App() {
             <Route path="student-login" element={<StudentLogin />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="reset-password" element={<ResetPassword />} />
+            <Route path="invoice/:id" element={<InvoiceView />} />
 
             <Route path="admin" element={<RequirePortal portal="admin"><PortalLayout portal="admin" /></RequirePortal>}>
               <Route index element={<AdminDashboard />} />
@@ -80,6 +84,7 @@ export default function App() {
               <Route path="lessons" element={<ModuleGate moduleKey="lessons"><Lessons /></ModuleGate>} />
               <Route path="resources" element={<ModuleGate moduleKey="resources"><Resources /></ModuleGate>} />
               <Route path="homework" element={<ModuleGate moduleKey="homework"><Homework /></ModuleGate>} />
+              <Route path="invoices" element={<ModuleGate moduleKey="invoices"><Invoices /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="parent" element={<RequirePortal portal="parent"><PortalLayout portal="parent" /></RequirePortal>}>
@@ -88,6 +93,7 @@ export default function App() {
               <Route path="calendar" element={<ModuleGate moduleKey="calendar"><FamilyLessons mode="upcoming" portal="parent" /></ModuleGate>} />
               <Route path="lessons" element={<ModuleGate moduleKey="lessons"><FamilyLessons mode="past" portal="parent" /></ModuleGate>} />
               <Route path="homework" element={<ModuleGate moduleKey="homework"><FamilyHomework portal="parent" /></ModuleGate>} />
+              <Route path="invoices" element={<ModuleGate moduleKey="invoices"><ParentInvoices /></ModuleGate>} />
               <Route path=":moduleKey" element={<ModulePage />} />
             </Route>
             <Route path="student" element={<RequirePortal portal="student"><PortalLayout portal="student" /></RequirePortal>}>
